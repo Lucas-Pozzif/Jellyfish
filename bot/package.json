@@ -1,0 +1,22 @@
+{
+  "name": "jellyfish",
+  "version": "0.1.0",
+  "description": "This code is for the discord bot of jellyfish\r for starting this you will:\r - need to have node.js installed",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lucas-Pozzif/Jellyfish.git"
+  },
+  "author": "lucas pozzi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lucas-Pozzif/Jellyfish/issues"
+  },
+  "homepage": "https://github.com/Lucas-Pozzif/Jellyfish#readme",
+  "dependencies": {
+    "discord.js": "^14.8.0"
+  }
+}

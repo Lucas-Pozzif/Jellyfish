@@ -1,0 +1,6 @@
+This code is for the discord bot of jellyfish
+for starting this you will:
+- need to have node.js installed
+- run npm install
+- run node .
+the bot will run, remember adding the token to the token file
