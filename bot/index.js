@@ -5,15 +5,15 @@ const { doc, getDoc, setDoc } = require("firebase/firestore");
 const { db } = require("./data/firebase");
 
 const { token } = require("./config.json");
-const { getUser } = require("./functions/user/user");
+const { getUser, setUser } = require("./functions/user/user");
+
+const  userCache  = require("./data/user-cache.json");
 
 const c = new Client({
 	intents: [GatewayIntentBits.GuildMessages, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent],
 });
 
 c.commands = new Collection();
-
-var userCache = {}
 
 function commandHandler() {
 	const foldersPath = path.join(__dirname, "commands");
@@ -54,13 +54,11 @@ c.once("ready", (bot) => {
 });
 
 c.on("messageCreate", async (msg) => {
-	userCache = await getUser(msg.author.id);
-	console.log('fora da funcao');
-	console.log(userCache);
-	executeCommand(msg);
+	await getUser(msg.author.id);
+	await executeCommand(msg);
+	await setUser(msg.author.id)
 
 });
 
 c.login(token);
 
-module.exports = { userCache }
