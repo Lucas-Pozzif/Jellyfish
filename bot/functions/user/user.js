@@ -2,7 +2,7 @@ const { doc, getDoc, setDoc } = require("firebase/firestore");
 const fs = require('fs');
 
 const { db } = require("../../data/firebase");
-let userCache = require('../../data/user-cache.json')
+let userCache = require('../../data/cache/users.json')
 
 
 async function getUser(userId) {
@@ -15,18 +15,28 @@ async function getUser(userId) {
         const user = {
             userId: {
                 money: 100,
+                ideas: []
             }
         }
+        await console.log(userRef, userId)
         await setDoc(userRef, user.userId);
+        userCache[userId] = user.userId;
+    } else {
+        userCache[userId] = await userSnap.data();
+        await userUpdater(userId)
     }
-    userCache[userId] = userSnap.data();
-    //await fs.writeFileSync('data/user-cache.json', JSON.stringify(userCache, null, 2))
 }
 
 
 async function setUser(userId) {
     const userRef = doc(db, 'users', userId);
-    await setDoc(userRef,userCache[userId]);
+    await setDoc(userRef, userCache[userId]);
+}
+
+function userUpdater(userId) {
+    if (!userCache[userId].money) userCache[userId].money = 100;
+    if (!userCache[userId].ideas) userCache[userId].ideas = [];
+
 }
 
 module.exports = { getUser, setUser }
