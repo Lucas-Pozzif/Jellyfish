@@ -1,12 +1,11 @@
-const userCache = require("../../data/user-cache.json");
-
-const { SlashCommandBuilder } = require("discord.js");
+const userCache = require("../../data/cache/users.json");
 
 module.exports = {
-  data: new SlashCommandBuilder().setName("money").setDescription("Tells you how much money you have on your account"),
+  name: "conta",
+  aliases: ['money', 'm', 'account'],
+  description: ("Adiciona ideias a sua lista de ideias"),
 
   async execute(msg) {
-    userCache[msg.author.id].money ++
     const money = userCache[msg.author.id].money;
 
     await msg.reply(`money: ${money}`);
