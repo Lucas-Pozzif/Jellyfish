@@ -6,8 +6,7 @@ const { db } = require("./data/firebase");
 
 const { token } = require("./config.json");
 const { getUser, setUser } = require("./functions/user/user");
-
-const  userCache  = require("./data/user-cache.json");
+const { setIdea } = require("./functions/ideas/ideas");
 
 const c = new Client({
 	intents: [GatewayIntentBits.GuildMessages, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent],
@@ -27,8 +26,8 @@ function commandHandler() {
 			const filePath = path.join(commandsPath, file);
 			const command = require(filePath);
 			// Set a new item in the Collection with the key as the command name and the value as the exported module
-			if ("data" in command && "execute" in command) {
-				c.commands.set(command.data.name, command);
+			if ("name" in command && "execute" in command) {
+				c.commands.set(command.name, command);
 
 			} else {
 				console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
@@ -38,11 +37,32 @@ function commandHandler() {
 }
 
 async function executeCommand(msg) {
-	const command = c.commands.get(msg.content);
+	if (!msg.content.startsWith(';')) return;
+	if (msg.author.bot) return;
+
+	const args = msg.content
+		.slice(1)
+		.trim()
+		.split(/ +/);
+	const commandName = args.shift().toLowerCase()
+
+	const command = c.commands.get(commandName)
+		|| c.commands.find(command => command.aliases && command.aliases.includes(commandName))
+
 	if (command) {
+
+		if (command.args && !args.length) {
+			let noArgs = `Este comando precisa de argumentos! `
+			if (command.usage) {
+				noArgs += `O uso correto é **;${command.name} ${command.usage}**`
+			}
+			return msg.reply(noArgs)
+		}
+
 		try {
-			await command.execute(msg);
+			await command.execute(msg, args);
 		} catch (err) {
+			console.log(err)
 			await msg.reply(`O comando **${msg.content}** não está funcionando, tente novamente mais tarde`)
 		}
 	}
