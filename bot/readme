@@ -1,6 +1,27 @@
-This code is for the discord bot of jellyfish
-for starting this you will:
-- need to have node.js installed
-- run npm install
-- run node .
-the bot will run, remember adding the token to the token file
+#Jellyfish Discord Bot
+Welcome to the Jellyfish Discord Bot! This bot is designed to enhance your Discord server experience with fun and useful features. Follow the steps below to get started!
+
+Prerequisites
+Before you can start using the Jellyfish bot, you need to have Node.js installed on your machine. You can download Node.js from the official website: https://nodejs.org/en/
+
+Installation
+To install the Jellyfish bot, follow these steps:
+
+Clone the repository to your local machine.
+Open a terminal and navigate to the directory where the repository is located.
+Run npm install to install the required dependencies.
+Rename the config.example.json file to config.json.
+Replace the placeholder text in the config.json file with your Discord bot token. You can obtain a bot token by creating a new bot application in the Discord Developer Portal.
+Run node . to start the bot.
+Features
+The Jellyfish bot comes with a variety of features that can help you manage your Discord server, including:
+
+Custom Commands: Create custom commands for your server members to use.
+Moderation: Easily manage your server with moderation commands.
+Fun Commands: Add some fun to your server with a range of fun commands.
+Music: Play music directly in your Discord server with the bot's music player.
+Contributing
+If you would like to contribute to the Jellyfish bot, feel free to open an issue or submit a pull request on the GitHub repository. We welcome any and all contributions!
+
+License
+The Jellyfish bot is open source software released under the MIT license.
