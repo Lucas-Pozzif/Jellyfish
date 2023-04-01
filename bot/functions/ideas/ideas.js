@@ -1,8 +1,3 @@
-/**
- * Critérios:
- * Cada ideia terá um id, um nome, participantes, um canal, tempo e as mensagens dos participantes
- */
-
 const { doc, getDoc, setDoc, collection, getCountFromServer } = require("firebase/firestore");
 
 const { db } = require("../../data/firebase");
