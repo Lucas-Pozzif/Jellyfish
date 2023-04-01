@@ -5,16 +5,16 @@ let ideaCache = require("../../data/cache/ideas.json");
 
 const idea = {
     title: '',
-    discutted: {
+    discussed: {
         at: null,
         by: [],
-        for: null
+        until: null
     },
     created: {
         at: new Date(),
         by: ''
     },
-    development: [
+    discussion: [
     ]
 };
 
