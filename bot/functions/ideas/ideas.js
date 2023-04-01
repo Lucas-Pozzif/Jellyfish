@@ -12,7 +12,6 @@ async function getIdea(ideaId) {
 	if (!ideaSnap.exists()) return
 
 	ideaCache[ideaId] = ideaSnap.data();
-	console.log(ideaCache[ideaId])
 }
 
 async function addIdea(idea) {
@@ -27,4 +26,10 @@ async function addIdea(idea) {
 	return ideaId
 }
 
-module.exports = { getIdea, addIdea };
+async function setIdea(ideaId) {
+	const ideaRef = doc(db, 'ideas', ideaId);
+	await setDoc(ideaRef, ideaCache[ideaId]);
+
+}
+
+module.exports = { getIdea, addIdea,setIdea };
