@@ -1,15 +1,16 @@
 const { Client, Events, GatewayIntentBits, Collection, SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
 const path = require("path");
-const { doc, getDoc, setDoc } = require("firebase/firestore");
-const { db } = require("./data/firebase");
 
 const { token } = require("./config.json");
 const { getUser, setUser } = require("./functions/user/user");
-const { setIdea } = require("./functions/ideas/ideas");
 
 const c = new Client({
-	intents: [GatewayIntentBits.GuildMessages, GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent],
+	intents: [
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.MessageContent
+	],
 });
 
 c.commands = new Collection();
@@ -44,6 +45,7 @@ async function executeCommand(msg) {
 		.slice(1)
 		.trim()
 		.split(/ +/);
+	const discussion = []
 	const commandName = args.shift().toLowerCase()
 
 	const command = c.commands.get(commandName)
@@ -59,12 +61,44 @@ async function executeCommand(msg) {
 			return msg.reply(noArgs)
 		}
 
-		try {
-			await command.execute(msg, args);
-		} catch (err) {
-			console.log(err)
-			await msg.reply(`O comando **${msg.content}** não está funcionando, tente novamente mais tarde`)
+		if (command.discussion) {
+			msg.channel.send(`O comando **${command.name}** iniciou uma discussão, para encerrá-la digite **;encerrar**`)
+
+			const collector = msg.channel.createMessageCollector(discMsg => { discMsg.channel.id === msg.channel.id, { time: 0 } });
+			collector.on('collect', async discMsg => {
+				if(discMsg.author.bot){
+					discMsg.react('🤖')
+					return
+				}
+
+				if (discMsg.content == ';encerrar') {
+					discMsg.react('📨')
+					collector.stop();
+					return
+				}
+				discussion.push(discMsg);
+				discMsg.react('📩')
+
+			})
+			collector.on('end', async collected => {
+				try {
+					await command.execute(msg, args, discussion);
+
+				} catch (err) {
+					console.log(err)
+					await msg.reply(`O comando **${msg.content}** não está funcionando, tente novamente mais tarde`)
+				}
+			});
+		} else {
+			try {
+				await command.execute(msg, args);
+
+			} catch (err) {
+				console.log(err)
+				await msg.reply(`O comando **${command.name}** não está funcionando, tente novamente mais tarde`)
+			}
 		}
+
 	}
 }
 
