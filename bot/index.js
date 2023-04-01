@@ -62,33 +62,8 @@ async function executeCommand(msg) {
 		}
 
 		if (command.discussion) {
-			msg.channel.send(`O comando **${command.name}** iniciou uma discussão, para encerrá-la digite **;encerrar**`)
+			discussionCollector(msg, args, discussion, command)
 
-			const collector = msg.channel.createMessageCollector(discMsg => { discMsg.channel.id === msg.channel.id, { time: 0 } });
-			collector.on('collect', async discMsg => {
-				if(discMsg.author.bot){
-					discMsg.react('🤖')
-					return
-				}
-
-				if (discMsg.content == ';encerrar') {
-					discMsg.react('📨')
-					collector.stop();
-					return
-				}
-				discussion.push(discMsg);
-				discMsg.react('📩')
-
-			})
-			collector.on('end', async collected => {
-				try {
-					await command.execute(msg, args, discussion);
-
-				} catch (err) {
-					console.log(err)
-					await msg.reply(`O comando **${msg.content}** não está funcionando, tente novamente mais tarde`)
-				}
-			});
 		} else {
 			try {
 				await command.execute(msg, args);
@@ -100,6 +75,42 @@ async function executeCommand(msg) {
 		}
 
 	}
+}
+
+async function discussionCollector(msg, args, discussion, command) {
+	if (command.validator) {
+		if (!await command.validator(msg, args)) {
+			console.log('isso não passou no validador')
+			return
+		}
+	}
+	msg.channel.send(`O comando **${command.name}** iniciou uma discussão, para encerrá-la digite **;encerrar**`)
+
+	const collector = msg.channel.createMessageCollector(discMsg => { discMsg.channel.id === msg.channel.id, { time: 0 } });
+	collector.on('collect', async discMsg => {
+		if (discMsg.author.bot) {
+			discMsg.react('🤖');
+			discMsg.react('📩');
+		}
+
+		if (discMsg.content == ';encerrar') {
+			discMsg.react('📨')
+			collector.stop();
+			return
+		}
+		discussion.push(discMsg);
+		discMsg.react('📩')
+
+	})
+	collector.on('end', async () => {
+		try {
+			await command.execute(msg, args, discussion);
+
+		} catch (err) {
+			console.log(err)
+			await msg.reply(`O comando **${msg.content}** não está funcionando, tente novamente mais tarde`)
+		}
+	});
 }
 
 c.once("ready", (bot) => {
