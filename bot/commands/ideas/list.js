@@ -2,11 +2,9 @@ const { getIdea } = require("../../functions/ideas/ideas");
 let ideaCache = require("../../data/cache/ideas.json");
 
 module.exports = {
-    name: "ler",
-    aliases: ['read', 'r'],
+    name: "lista",
+    aliases: ['list', 'l'],
     description: ("Lista sua lista de ideias"),
-    args: true,
-    usage: '<ideaId>',
     async execute(msg, args) {
         var ideas = userCache[msg.author.id].ideas
         let reply = `Sua lista de ideias:\n`;

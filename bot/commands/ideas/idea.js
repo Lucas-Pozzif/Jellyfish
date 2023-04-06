@@ -1,9 +1,6 @@
-const { getUser } = require("../../functions/user/user");
-
-const { addIdea, getIdea } = require("../../functions/ideas/ideas");
+const { addIdea } = require("../../functions/ideas/ideas");
 
 const userCache = require("../../data/cache/users.json");
-let ideaCache = require("../../data/cache/ideas.json");
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 
 const idea = {

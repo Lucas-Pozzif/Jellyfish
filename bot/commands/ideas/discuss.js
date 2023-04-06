@@ -5,7 +5,7 @@ let ideaCache = require("../../data/cache/ideas.json");
 
 module.exports = {
     name: "discutir",
-    aliases: ['discuss', 'disc', 'd'],
+    aliases: ['discuss', 'disc'],
     description: ("Adiciona ideias a sua lista de ideias"),
     args: true,
     usage: '<ideaId>',
