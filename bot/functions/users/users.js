@@ -20,9 +20,9 @@ async function getUser(userId) {
     if (!userSnap.exists()) {
         const user = {
             userId: {
-                name: c.users.cache.get(userId).username,
                 money: 100,
-                ideas: []
+                ideas: [],
+                cooldowns: {}
             }
         }
         await setDoc(userRef, user.userId);
@@ -40,9 +40,9 @@ async function setUser(userId) {
 }
 
 function userUpdater(userId) {
-    if (!userCache[userId].name) userCache[userId].name = '';
     if (!userCache[userId].money) userCache[userId].money = 100;
     if (!userCache[userId].ideas) userCache[userId].ideas = [];
+    if (!userCache[userId].cooldowns) userCache[userId].cooldowns = {};
 
 }
 
