@@ -13,18 +13,16 @@ module.exports = {
     async validator(msg, args) {
         const ideaId = args[0];
 
-        if (isNaN(ideaId)) {
-            msg.reply('o comando discutir exige um id numérico');
+        if (!await getIdea(ideaId)) {
+            msg.reply('Este Id não é válido, verifique a lista de ideias com **;i list**')
             return false
         }
-
-        await getIdea(ideaId)
-        if(!ideaCache[ideaId]){
-            msg.reply('essa ideia nao existe')
+        if (!userCache[msg.author.id].ideas.includes(ideaId)) {
+            msg.reply('A ideia selecionada é de outra pessoa, peça que ela inicie a discussão')
             return false
         }
+        
         return true
-
     },
     async execute(msg, args, disc) {
 
@@ -32,9 +30,15 @@ module.exports = {
         let discussion = ['Discussão:\n\n'];
 
         disc.forEach(discMsg => {
+            const author = discMsg.author
+
             ideaCache[ideaId].discussion.push({
                 message: discMsg.content,
-                authorId: discMsg.author.id,
+                author:{
+                    id: author.id,
+                    username: author.username,
+                    discriminator: author.discriminator
+                },
                 at: discMsg.createdAt
             })
 
@@ -42,6 +46,6 @@ module.exports = {
         })
 
         await setIdea(ideaId)
-        msg.channel.send(discussion.join('A discussão foi salva!'))
+        msg.channel.send(discussion.join('\n'))
     }
 };
