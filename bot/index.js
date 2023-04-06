@@ -3,7 +3,9 @@ const fs = require("fs");
 const path = require("path");
 
 const { token } = require("./config.json");
-const { getUser, setUser } = require("./functions/user/user");
+const { getUser, setUser } = require("./functions/users/users");
+
+let userCache = require('./data/cache/users.json');
 
 const c = new Client({
 	intents: [
@@ -47,12 +49,28 @@ async function executeCommand(msg) {
 		.split(/ +/);
 	const discussion = []
 	const commandName = args.shift().toLowerCase()
-
+	const now = new Date()
+	const userId = msg.author.id
+	const user = userCache[userId]
 	const command = c.commands.get(commandName)
 		|| c.commands.find(command => command.aliases && command.aliases.includes(commandName))
 
 	if (command) {
+		const cooldown = command.cooldown | 0
 
+		if (user.cooldowns?.[command.name].seconds) {
+			user.cooldowns[command.name] = (user.cooldowns[command.name].seconds * 1000)
+		}
+
+		if (user.cooldowns?.[command.name] > now) {
+			const remainingCooldown = new Date(user.cooldowns[command.name] - now)
+			remainingCooldown.setHours(remainingCooldown.getHours() + remainingCooldown.getTimezoneOffset() / 60)
+
+			return msg.reply(`Você precisa esperar ${remainingCooldown.toLocaleTimeString()} pra que esse comando possa ser executado novamente`)
+		}
+
+
+		//stops you if it needs arguments
 		if (command.args && !args.length) {
 			let noArgs = `Este comando precisa de argumentos! `
 			if (command.usage) {
@@ -61,6 +79,7 @@ async function executeCommand(msg) {
 			return msg.reply(noArgs)
 		}
 
+		//run a discussion model if the command has discussion attribute
 		if (command.discussion) {
 			discussionCollector(msg, args, discussion, command)
 
@@ -73,6 +92,7 @@ async function executeCommand(msg) {
 				await msg.reply(`O comando **${command.name}** não está funcionando, tente novamente mais tarde`)
 			}
 		}
+		user.cooldowns[command.name] = new Date(now.getTime() + cooldown * 60000)
 
 	}
 }
@@ -119,9 +139,11 @@ c.once("ready", (bot) => {
 });
 
 c.on("messageCreate", async (msg) => {
-	await getUser(msg.author.id);
+	const userId = msg.author.id
+
+	await getUser(userId);
 	await executeCommand(msg);
-	await setUser(msg.author.id)
+	await setUser(userId)
 
 });
 
