@@ -58,7 +58,7 @@ async function executeCommand(msg) {
 	if (command) {
 		const cooldown = command.cooldown | 0
 
-		if (user.cooldowns?.[command.name].seconds) {
+		if (user.cooldowns?.[command.name]?.seconds) {
 			user.cooldowns[command.name] = (user.cooldowns[command.name].seconds * 1000)
 		}
 
